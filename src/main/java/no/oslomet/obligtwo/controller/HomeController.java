@@ -5,6 +5,9 @@ import no.oslomet.obligtwo.model.Author;
 import no.oslomet.obligtwo.model.Book;
 import no.oslomet.obligtwo.repository.AuthorRepository;
 import no.oslomet.obligtwo.repository.BookRepository;
+import no.oslomet.obligtwo.service.AuthorService;
+import no.oslomet.obligtwo.service.BookService;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,10 +19,12 @@ import java.util.List;
 @Controller
 public class HomeController {
 
+
+
     @Autowired
-    private AuthorRepository authorRepository;
+    private AuthorService authorService;
     @Autowired
-    private BookRepository bookRepository;
+    private BookService bookService;
 
 
     @GetMapping("index")
@@ -29,7 +34,7 @@ public class HomeController {
 
     @GetMapping("/listAuthor")
     public String listAuthor(Model model){
-        List<Author> authors = authorRepository.findAll();
+        List<Author> authors = authorService.findAll();
         model.addAttribute("authors",authors);
         Author author = new Author();
         model.addAttribute("author",author);
@@ -39,13 +44,14 @@ public class HomeController {
 
     @PostMapping("/saveAuthor")
     public String saveAuthor(@ModelAttribute("author") Author author){
-        authorRepository.save(author);
+        authorService.save(author);
         return "redirect:/listAuthor";
     }
 
     @GetMapping("/listBook")
     public String listBook(Model model){
-        List<Book> books = bookRepository.findAll();
+
+        List<Book> books = bookService.findAll();
         model.addAttribute("books",books);
         Book book = new Book();
         model.addAttribute("book",book);
@@ -53,9 +59,9 @@ public class HomeController {
         return "/listBook";
     }
 
-    @PostMapping("/saveBook")
+    @GetMapping("/saveBook")
     public String saveBook(@ModelAttribute("book") Book book){
-        bookRepository.save(book);
+        bookService.save(book);
         return "redirect:/listBook";
     }
     @GetMapping("/authorForm")
@@ -75,7 +81,7 @@ public class HomeController {
 
     @GetMapping("/edit/{ISBN}")
     public String edit(@PathVariable("ISBN") String ISBN, Model model ){
-        Book book = this.bookRepository.findById(Long.parseLong(ISBN)).get();
+        Book book = this.bookService.findById(Long.parseLong(ISBN)); //fjernet get het
         //List<Book> books = bookRepository.findAll();
         model.addAttribute("book",book);
         //model.addAttribute("books",books);
@@ -84,9 +90,16 @@ public class HomeController {
     }
     @GetMapping("/delete/{ISBN}")
     public String delete(@PathVariable("ISBN") String ISBN, Model model ){
-        this.bookRepository.deleteById(Long.parseLong(ISBN));
+        this.bookService.deleteById(Long.parseLong(ISBN));
         return "redirect:/listBook";
     }
+/*
+    @GetMapping("/searchBook{title}")
+    public String search(@PathVariable("title") String title,Book book){
+        List<Book> book1 = this.bookService.search(book);
+        return title;
+    }
 
+*/
 
 }

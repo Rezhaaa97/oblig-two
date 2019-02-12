@@ -23,7 +23,7 @@
                     <a class="nav-link" href="/listAuthor">Authors</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/listBook">Registred Books</a>
+                    <a class="nav-link" href="/listBook">Catalogue of books</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/authorForm">Add Author</a>
@@ -47,6 +47,15 @@
             <th>Title</th>
             <th>Release Year</th>
             <th>Quantity</th>
+
+            <th>
+                <form th:action="@{/searchBook}" modelAttribute="book" method="post">
+                    <div class="form-group">
+                        <input type="text"  th:value="${book.title}" name="title" class="form-control" placeholder="Title">
+                        <input type="submit" th:value="search" class="add-button" />
+                    </div>
+                </form>
+            </th>
 
         </tr>
         <tbody>
