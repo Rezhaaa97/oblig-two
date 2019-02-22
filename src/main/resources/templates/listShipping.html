@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Shipped</title>
+    <head th:replace="fragments/header :: head"></head>
+
+</head>
+<body>
+<div th:replace="fragments/menu :: div"/></div>
+
+<h3 class="text-success" align="center">The order has been shipped</h3>
+
+<div th:if="${!books.empty}">
+    <h5 class="text-secondary" align="center">But the following book(s) can not be shipped because we have no more stock.</h5>
+    <h5 class="text-secondary" align="center">We are sorry.</h5>
+
+    <table class="table col-sm-12" align="center">
+        <tr>
+            <th>ISBN</th>
+            <th>Title</th>
+        </tr>
+        <tbody>
+        <th:block th:each="book : ${books}">
+            <tr>
+                <td th:text="${book.ISBN}"></td>
+                <td th:text="${book.title}"></td>
+            </tr>
+        </th:block>
+        </tbody>
+    </table>
+</div>
+
+
+</body>
+</html>

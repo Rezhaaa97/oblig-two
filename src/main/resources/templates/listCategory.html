@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Authors</title>
+    <title>Categories</title>
     <head th:replace="fragments/header :: head"></head>
 
 </head>
@@ -13,20 +13,16 @@
     <div class="row my-5">
         <div class="col-sm-8  mx-auto">
 
-            <h3 class="text-success text-center">Authors</h3>
-            <div th:if="${!authors.empty}">
+            <h3 class="text-success text-center">Categories</h3>
+            <div th:if="${!categories.empty}">
                 <table class="table col-sm-6">
                     <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Rating</th>
+                        <th>Name</th>
                     </tr>
                     <tbody>
 
-                    <tr th:each="author : ${authors}">
-                        <td th:text="${author.firstName}"></td>
-                        <td th:text="${author.lastName}"></td>
-                        <td th:text="${author.rating}"></td>
+                    <tr th:each="category : ${categories}">
+                        <td th:text="${category.name}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -34,6 +30,7 @@
         </div>
     </div>
 </div>
+
 
 </body>
 </html>

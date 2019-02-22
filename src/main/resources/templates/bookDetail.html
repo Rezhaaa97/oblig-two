@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Book</title>
+    <head th:replace="fragments/header :: head"></head>
+
+</head>
+<body>
+<div th:replace="fragments/menu :: div"/></div>
+
+<h3 class="text-success text-center">Book Details</h3>
+<div style="text-align: center">
+    <table class="table col-sm-6" align="center">
+        <tbody>
+        <tr>
+            <th>ISBN</th>
+            <td th:text="${book.ISBN}"></td>
+        </tr>
+
+        <tr>
+            <th>Title</th>
+            <td th:text="${book.title}"></td>
+        </tr>
+
+        <tr>
+            <th>Release Year</th>
+            <td th:text="${book.releaseYear}"></td>
+        </tr>
+
+        <tr>
+            <th>Category</th>
+            <td th:text="${book.category.name}"></td>
+        </tr>
+
+        <tr>
+            <th>Quantity</th>
+            <td th:text="${book.quantity}"></td>
+        </tr>
+
+        <tr>
+            <th>Authors</th>
+            <th>Rating</th>
+        </tr>
+
+        <th:block th:each="author : ${authors}">
+            <tr>
+                <td th:text="${author.firstName}+' '+${author.lastName}"></td>
+                <td th:text="${author.rating}"></td>
+            </tr>
+        </th:block>
+        </tbody>
+
+    </table>
+
+    <a class="btn btn-primary" th:href="@{/orderBook/}+${book.id}">Order</a>
+    <a class="btn btn-warning" th:href="@{/editBook/}+${book.id}">Edit</a>
+    <a class="btn btn-danger" th:href="@{/deleteBook/}+${book.id}">Delete</a>
+</div>
+
+</body>
+</html>

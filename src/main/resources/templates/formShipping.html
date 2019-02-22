@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>New Shipping</title>
+    <head th:replace="fragments/header :: head"></head>
+
+</head>
+<body>
+<div th:replace="fragments/menu :: div"/></div>
+
+<div class="container">
+    <h3 class="text-success">New Shipping </h3>
+    <form th:action="@{/saveShipping}" modelAttribute="ship" method="post" th:object="${ship}">
+        <input type="hidden"  th:value="${ship.shipping_id}" name="id">
+
+        <h8 class="text-secondary">First Name</h8>
+        <div class="form-group">
+            <input type="text"  th:value="${ship.firstName}" name="firstName" class="form-control" placeholder="First Name" >
+        </div>
+
+        <h8 class="text-secondary">Last Name</h8>
+        <div class="form-group">
+            <input type="text"  th:value="${ship.lastName}" name="lastName" class="form-control" placeholder="Last Name" >
+        </div>
+
+        <h8 class="text-secondary">Address</h8>
+        <div class="form-group">
+            <input type="text"  th:value="${ship.address}" name="address" class="form-control" placeholder="address" >
+        </div>
+
+        <h8 class="text-secondary">Postal Code</h8>
+        <div class="form-group">
+            <input type="text"  th:value="${ship.postalCode}" name="postalCode" class="form-control" placeholder="Postal Code" >
+        </div>
+
+        <button class="btn btn-success">Save</button>
+    </form>
+</div>
+
+</body>
+</html>

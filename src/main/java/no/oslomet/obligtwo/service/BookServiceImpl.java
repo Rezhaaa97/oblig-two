@@ -20,13 +20,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book findById(long id ) {
-        return bookRepository.findById(id).get();
+    public Book findById(long ISBN ) {
+        return bookRepository.findById(ISBN).get();
     }
 
     @Override
-    public void deleteById(long id ) {
-        bookRepository.deleteById(id);
+    public void deleteById(long ISBN ) {
+        bookRepository.deleteById(ISBN);
 
     }
 
@@ -36,7 +36,15 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> search(String title) {
-        return null;
+    public Book search(String title) {
+        List<Book> books = bookRepository.findAll();
+       Book bookResponse = null;
+
+       for (Book book : books){
+           if (book.getTitle().contains(title)) return bookResponse = book;
+       }
+
+       return bookResponse;
+
     }
 }

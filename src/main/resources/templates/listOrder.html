@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <head th:replace="fragments/header :: head"></head>
+    <title>Title</title>
+</head>
+<body>
+<div th:replace="fragments/menu :: div"/></div>
+<div class="container">
+    <div class="row my-5">
+        <div class="col-sm-8  mx-auto">
+
+
+            <div th:if="${currentOrder != null}">
+                <h3 class="text-success text-center">Current Order</h3>
+                <table class="table col-sm-6" align="center">
+                    <tbody>
+                    <tr>
+                        <th>ID</th>
+                        <td th:text="${currentOrder.order_id}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Date</th>
+                        <td th:text="${currentOrder.date}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>ISBNs</th>
+                        <th>Books</th>
+                    </tr>
+
+                    <th:block th:each="book : ${books}">
+                        <tr>
+                            <td th:text="${book.ISBN}"></td>
+                            <td th:text="${book.title}"></td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+
+                <form th:action="@{/shipOrder/}+${currentOrder.order_id}" modelAttribute="currentOrder" method="post">
+                    <h8 class="text-secondary">Shipping</h8>
+                    <div class="form-group">
+                        <select class="custom-select" id="inputGroupSelect01"  name="shipping">
+                            <option th:each="ship : ${shippingList}" th:value="${ship.shipping_id}" th:text="${ship.firstName}+' '+${ship.lastName}+' '+${ship.postalCode}+' '+${ship.address}"></option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-success">Ship</button>
+                </form>
+
+            </div>
+
+
+            <h3 class="text-primary text-center">History</h3>
+
+            <div th:if="${!orders.isEmpty()}">
+                <table class="table col-sm-6" align="center">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                    <tbody>
+                    <th:block th:each="order : ${orders}">
+                        <tr>
+                            <td th:text="${order.order_id}"></td>
+                            <td th:text="${order.date}"></td>
+
+                            <td>
+                                <a class="btn btn-secondary" th:href="@{/detailOrder/}+${order.order_id}">Detail</a>
+                            </td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

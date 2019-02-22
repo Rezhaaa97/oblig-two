@@ -1,91 +1,90 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:form="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>Catalogue</title>
+    <head th:replace="fragments/header :: head"></head>
 
-    <!-- Font Awesome cdn -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
-        <i class="fas fa-book-open"> Books & Authors Registration</i>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" color="blue">
+    <style>
+        body{
 
+            background-color: #DEE5B9;
 
-        <a class="navbar-brand" href="#"></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/listAuthor">Authors</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/listBook">Catalogue of books</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/authorForm">Add Author</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/formBook">Add Book</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+        }
+
+    </style>
+
 </head>
 <body>
+<div th:replace="fragments/menu :: div"/></div>
 
 <div class="container">
-    <h3 class="text-primary"> Spring Boot demo  </h3>
-    <div class="col-sm-6  my-5">
-
-    <table class="table col-sm-6">
-        <tr>
-            <th>ISBN</th>
-            <th>Title</th>
-            <th>Release Year</th>
-            <th>Quantity</th>
-
-            <th>
-                <form th:action="@{/searchBook}" modelAttribute="book" method="post">
-                    <div class="form-group">
-                        <input type="text"  th:value="${book.title}" name="title" class="form-control" placeholder="Title">
-                        <input type="submit" th:value="search" class="add-button" />
-                    </div>
-                </form>
-            </th>
-
-        </tr>
-        <tbody>
-        <tr th:each="book : ${books}">
-            <td th:text="${book.ISBN}"> </td>
-            <td th:text="${book.title}"></td>
-            <td th:text="${book.releaseYear}"></td>
-            <td th:text="${book.quantity}"></td>
-            <td>
-               <a class="btn btn-warning" th:href="@{/edit/} + ${book.ISBN}">Edit</a>
-                <!--<a th:href="@{/books/edit(bookISBN=${book.ISBN})}" class="btn btn-warning">Edit</a> -->
-            </td>
-            <td>
-                <a class="btn btn-danger" th:href="@{/delete/} + ${book.ISBN}">Delete</a>
-            </td>
+    <div class="row my-5">
+        <div class="col-sm-9  mx-auto">
 
 
-        </tr>
-        </tbody>
-    </table>
+            <form action="#" th:action="@{/searchBook}" th:object="${book}">
+                <label for="search_input">Search:</label> <input name="search"
+                                                                 id="search">
+            </input>
+                <div th:if="${! #lists.isEmpty(search)}">
+                    <h2>Search Results</h2>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>name</th>
+                            <th>rarity level</th>
+                            <th>year</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="search : ${books}">
+                            <td th:text="${search.ISBN}">Text ...</td>
+                            <td th:text="${search.name}">Text ...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
 
 
+            <h3 class="text-success text-center">Catalogue</h3>
 
-
+            <div th:if="${!books.empty}">
+                <table class="table col-sm-12" align="center">
+                    <tr>
+                        <th>ISBN</th>
+                        <th>Title</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tbody>
+                    <th:block th:each="book : ${books}">
+                        <tr>
+                            <td th:text="${book.ISBN}"></td>
+                            <td th:text="${book.title}"></td>
+                            <td>
+                                <a class="btn btn-secondary" th:href="@{/detailBook/}+${book.id}">Detail</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-primary" th:href="@{/orderBook/}+${book.id}">Order</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-warning" th:href="@{/editBook/}+${book.id}">Edit</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-danger" th:href="@{/deleteBook/}+${book.id}">Delete</a>
+                            </td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
-
-</div>
-
 </body>
-
-
-
 </html>

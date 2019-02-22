@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Error Quantity</title>
+    <head th:replace="fragments/header :: head"></head>
+
+</head>
+<body>
+<div th:replace="fragments/menu :: div"/></div>
+
+<div class="container">
+
+    <div class="row my-5">
+        <div class="col-sm-8 mx-auto">
+            <h1 class="text-danger text-center">We are unfortunately out of this book "Quantity = 0"</h1>
+            <h1 class="text-danger text-center">please look at the quantity in the book details</h1>
+        </div>
+    </div>
+    <a class="btn btn-primary" th:href="@{/catalogue}">Back to Catalogue</a>
+</div>
+
+</body>
+</html>
