@@ -2,7 +2,6 @@ package no.oslomet.obligtwo.controller;
 
 
 import no.oslomet.obligtwo.model.*;
-import no.oslomet.obligtwo.repository.*;
 import no.oslomet.obligtwo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,28 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 @Controller
 public class HomeController {
-
-
-
-    //@Autowired
-    //private AuthorRepository authorRepository;
-    //@Autowired
-    //private BookRepository bookRepository;
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private CategoryRepository categoryRepository;
-    @Autowired
-    private ShippingRepository shippingRepository;
 
     @Autowired
     private BookService bookService;
     @Autowired
     private AuthorService authorService;
-
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private ShippingService shippingService;
 
 
     @GetMapping("index")
@@ -46,22 +36,13 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("/authorForm")
-    @Transactional
-    public String formAuthor(Model model){
-        Author author = new Author();
-        model.addAttribute("author",author);
-        return "authorForm";
-    }
-
     @GetMapping("/listAuthor")
     @Transactional
     public String listAuthor(Model model){
         List<Author> authors = authorService.findAll();
         model.addAttribute("authors",authors);
-        //Author author = new Author();
-        //model.addAttribute("author",author);
-
+        Author author = new Author();
+        model.addAttribute("author",author);
         return "/listAuthor";
     }
 
@@ -74,12 +55,10 @@ public class HomeController {
 
     @GetMapping("/listBook")
     public String listBook(Model model){
-
         List<Book> books = bookService.findAll();
         model.addAttribute("books",books);
-       // Book book = new Book();
-        //model.addAttribute("book",book);
-
+        BookSearch search = new BookSearch();
+        model.addAttribute("bookSearch",search);
         return "/listBook";
     }
 
@@ -92,54 +71,18 @@ public class HomeController {
         for(Long id : bAList) {
             authorList.add(this.authorService.findById(id));
         }
-        Category category = this.categoryRepository.findById(categoryId).get();
+        Category category = this.categoryService.findById(categoryId);
         book.setAuthors(authorList);
         book.setCategory(category);
         bookService.save(book);
         return "redirect:/listBook";
     }
 
-
-
-    /*
-    @PostMapping("/saveBook")
-    @Transactional
-    public String saveBook(@RequestParam("id") Long bookId,
-                           @RequestParam("ISBN") Long ISBN,
-                           @RequestParam("title") String title,
-                           @RequestParam("releaseYear") String releaseYear,
-                           @RequestParam("quantity") int quantity,
-                           @RequestParam("category") long catId,
-                           @RequestParam("bookAuthS") long[] bAList){
-        List<Author> authorList= new ArrayList<>();
-        for(Long id : bAList) {
-            authorList.add(this.authorRepository.findById(id).get());
-        }
-        Category category = this.categoryRepository.findById(catId).get();
-            Book book;
-
-            book = new Book(ISBN, title, releaseYear, quantity,authorList ,category);
-
-            book = bookRepository.findById(bookId).get();
-            book.setISBN(ISBN);
-            book.setTitle(title);
-            book.setReleaseYear(releaseYear);
-            book.setQuantity(quantity);
-            book.setCategory(category);
-            book.setAuthors(authorList);
-
-        bookRepository.save(book);
-        return "redirect:/listBook";
-    }
-    */
-
-
-
     @GetMapping("/formBook")
     public String formBook(Model model){
         Book book = new Book();
         List<Author> authorsList = authorService.findAll();
-        List<Category> categoryList = categoryRepository.findAll();
+        List<Category> categoryList = categoryService.findAll();
         model.addAttribute("book", book);
         model.addAttribute("authors",authorsList);
         model.addAttribute("categories",categoryList);
@@ -161,7 +104,7 @@ public class HomeController {
         model.addAttribute("book",book);
         List<Author> authorsList = authorService.findAll();
         model.addAttribute("authors", authorsList);
-        List<Category> categoriesList = categoryRepository.findAll();
+        List<Category> categoriesList = categoryService.findAll();
         model.addAttribute("categories", categoriesList);
         return "/formBook";
     }
@@ -172,41 +115,30 @@ public class HomeController {
         return "redirect:/listBook";
     }
 
-    /*
+
     @RequestMapping("/searchBook")
-    public String search(@RequestParam(value = "search", required = false) String title, Model model) {
-        List<Book> searchResults = null;
-        try {
-            bookService.findAll();
-            searchResults = searchService.bookSearch(title);
-
-        } catch (Exception ex) {
-            // here you should handle unexpected errors
-            // ...
-            // throw ex;
-            //return "/listBook";
+    public String searchBook(@ModelAttribute BookSearch bookSearch, Model model) {
+        List<Book> booksList = bookService.findAll();
+        List<Book> search = new ArrayList<>();
+        String research = bookSearch.getSearchText();
+        for (Book book : booksList) {
+            if (book.getTitle().contains(research)
+                    || book.getCategory().getName().contains(research)) {
+                search.add(book);
+            }
         }
-        model.addAttribute("search", searchResults);
-        return "/listBook";
-
+        model.addAttribute("books", search);
+        BookSearch newSearch = new BookSearch();
+        model.addAttribute("bookSearch", newSearch);
+        return "listBook";
     }
-    */
 
-    /*
-    @PostMapping("/searchBook")
-    public String search(@RequestParam("title") String title, @ModelAttribute("search") Book book, Model model ){
-        Book book1 = this.bookService.search(title);
-        System.out.println("Found book: " + book1.getTitle());
-        model.addAttribute("searchBook", book1);
-
-        return "redirect:/listBook";
-    }
-    */
 
     @GetMapping("/orderBook/{id}")
     @Transactional
-    public String orderBook(@PathVariable("id") String id, Model model){
-        List<Order> ordersList = orderRepository.findAll();
+    public String orderBook(@PathVariable("id") String id){
+        boolean noneShipOrdered = false;
+        List<Order> ordersList = orderService.findAll();
         Order orderUsed = new Order();
         DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate localDate = LocalDate.now();
@@ -214,32 +146,50 @@ public class HomeController {
         List<Book> listB = new ArrayList<>();
 
         if (bookOrdered.getQuantity() == 0){
-            return "/errorQuantity";
+            return "/quantityError";
         }
-        orderUsed.setDate(df.format(localDate));
+
+        if (ordersList.isEmpty()){
+            orderUsed.setDate(df.format(localDate));
 
 
-        listB.add(bookOrdered);
-        orderUsed.setBooks(listB);
-        bookOrdered.getOrders().add(orderUsed);
-        orderRepository.save(orderUsed);
+            listB.add(bookOrdered);
+            orderUsed.setBooks(listB);
+            bookOrdered.getOrders().add(orderUsed);
+            orderService.save(orderUsed);
+        }else{
 
-        for (Order order : ordersList) {
-            if (order.getShipping() == null) {
-                listB.add(bookOrdered);
-                order.setBooks(listB);
-                bookOrdered.getOrders().add(order);
-                orderRepository.save(order);
+            for (Order order : ordersList) {
+                if (order.getShipping() == null) {
+                    noneShipOrdered = true;
+                    List<Book> lB = order.getBooks();
+                    lB.add(bookOrdered);
+                    order.setBooks(listB);
+                    bookOrdered.getOrders().add(order);
+                    orderService.save(order);
+                }
+            }
+            if (!noneShipOrdered){
+                Order orderUsed2 = new Order();
+                orderUsed2.setDate(df.format(localDate));
+                List<Book> lB = new ArrayList<>();
+                lB.add(bookOrdered);
+                orderUsed2.setBooks(lB);
+                bookOrdered.getOrders().add(orderUsed2);
+
+                orderService.save(orderUsed2);
             }
         }
+
+
 
         return "redirect:/listBook";
     }
     @GetMapping({"/listOrder"})
     @Transactional
     public String listOrder(Model model ) {
-        List<Order> ordersList = orderRepository.findAll();
-        List<Shipping> shippingList = shippingRepository.findAll();
+        List<Order> ordersList = orderService.findAll();
+        List<Shipping> shippingList = shippingService.findAll();
         Order currentOrder = null;
 
         for (Order order : ordersList) {
@@ -261,7 +211,7 @@ public class HomeController {
 
     @RequestMapping("/detailOrder/{id}")
     public String detailOrder(@PathVariable("id") String id, Model model) {
-        Order currentOrder = this.orderRepository.findById(Long.parseLong(id)).get();
+        Order currentOrder = this.orderService.findById(Long.parseLong(id));
         List<Book> booksList = currentOrder.getBooks();
         Shipping ship = currentOrder.getShipping();
 
@@ -272,41 +222,29 @@ public class HomeController {
         return "shippingDetail";
     }
 
-    @RequestMapping("/removeBook/{orderId}/{bookId}")
-    @Transactional
-    public String addCategory(@PathVariable("orderId") String orderId, @PathVariable("bookId") String bookId, Model model) {
-        Order currentOrder = this.orderRepository.findById(Long.parseLong(orderId)).get();
-        Book bookToRemove = this.bookService.findById(Long.parseLong(bookId));
-        List<Book> books = currentOrder.getBooks();
-        books.remove(bookToRemove);
-        currentOrder.setBooks(books);
-        orderRepository.save(currentOrder);
-
-        return "redirect:/listOrder";
-    }
 
     @PostMapping("/shipOrder/{id}")
     @Transactional
     public String shipOrder(@RequestParam("shipping") long shippingId, @PathVariable("id") String id, Model model){
-        Order currentOrder = this.orderRepository.findById(Long.parseLong(id)).get();
+        Order currentOrder = this.orderService.findById(Long.parseLong(id));
         List<Book> bookList = currentOrder.getBooks();
-        List<Book> noBookStock = new ArrayList<>();
+        List<Book> emptyStock = new ArrayList<>();
         for (Book book : bookList) {
             if (book.getQuantity()>0){
                 book.setQuantity(book.getQuantity()-1);
             }
             else {
-                noBookStock.add(book);
+                emptyStock.add(book);
+
             }
         }
-        Shipping shipping = this.shippingRepository.findById(shippingId).get();
+        Shipping shipping = this.shippingService.findById(shippingId);
         currentOrder.setShipping(shipping);
-        model.addAttribute("books", noBookStock);
+        model.addAttribute("books", emptyStock);
         return "listShipping";
     }
 
 
-    /* ================ Shipping ================ */
 
     @RequestMapping("/formShipping")
     public String addShip(Model model) {
@@ -317,38 +255,24 @@ public class HomeController {
 
     @PostMapping("/saveShipping")
     public String saveShip(@ModelAttribute("ship") Shipping ship ){
-        shippingRepository.save(ship);
+        shippingService.save(ship);
         return "redirect:/listBook";
     }
 
-////////////////// CAtegory
     @RequestMapping("/formCategory")
     public String addCategory(Model model) {
         Category newCategory = new Category();
         model.addAttribute("category", newCategory);
-        List<Category> categoriesList = categoryRepository.findAll();
+        List<Category> categoriesList = categoryService.findAll();
         model.addAttribute("categories", categoriesList);
         return "formCategory";
     }
 
     @PostMapping("/saveCategory")
     public String saveCategory(@ModelAttribute("category") Category category ){
-        categoryRepository.save(category);
+        categoryService.save(category);
         return "redirect:/formCategory";
     }
-
-    /*
-    @GetMapping({"/listCategory"})
-    public String listCategory(Model model ) {
-        List<Category> categoriesList = categoryRepository.findAll();
-        model.addAttribute("categories", categoriesList);
-        return "listCategory";
-    }
-    */
-
-
-
-
 
 
 }

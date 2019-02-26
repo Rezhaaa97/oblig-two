@@ -27,7 +27,6 @@ public class BookServiceImpl implements BookService {
     @Override
     public void deleteById(long ISBN ) {
         bookRepository.deleteById(ISBN);
-
     }
 
     @Override
@@ -35,16 +34,5 @@ public class BookServiceImpl implements BookService {
         return bookRepository.save(book);
     }
 
-    @Override
-    public Book search(String title) {
-        List<Book> books = bookRepository.findAll();
-       Book bookResponse = null;
 
-       for (Book book : books){
-           if (book.getTitle().contains(title)) return bookResponse = book;
-       }
-
-       return bookResponse;
-
-    }
 }

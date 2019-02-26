@@ -10,7 +10,8 @@ public interface BookService {
    Book findById(long ISBN );
    void deleteById(long ISBN);
    Book save(Book book );
-   Book search(String title);
+
+
 
 
 }

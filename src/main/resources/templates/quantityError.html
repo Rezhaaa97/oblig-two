@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>Error Quantity</title>
     <head th:replace="fragments/header :: head"></head>
-
+    <style>
+        body{
+            background-color: #F3F4F8;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="fragments/menu :: div"/></div>
@@ -17,7 +21,7 @@
             <h1 class="text-danger text-center">please look at the quantity in the book details</h1>
         </div>
     </div>
-    <a class="btn btn-primary" th:href="@{/catalogue}">Back to Catalogue</a>
+    <a class="btn btn-secondary" th:href="@{/listBook}">Back to Catalogue</a>
 </div>
 
 </body>

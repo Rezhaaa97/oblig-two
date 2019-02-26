@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>Shipping</title>
     <head th:replace="fragments/header :: head"></head>
-
+    <style>
+        body{
+            background-color: #F3F4F8;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="fragments/menu :: div"/></div>
@@ -17,21 +21,29 @@
     <tr>
         <th>ID</th>
         <td th:text="${order.order_id}"></td>
+        <td></td>
+        <td></td>
     </tr>
 
     <tr>
         <th>Date</th>
         <td th:text="${order.date}"></td>
+        <td></td>
+        <td></td>
     </tr>
 
     <tr>
-        <th>Books</th>
+        <th>Book(s) Ordered</th>
+        <td></td>
+        <td></td>
         <td></td>
     </tr>
 
     <th:block th:each="book : ${books}">
         <tr>
+            <th>ISBN</th>
             <td th:text="${book.ISBN}"></td>
+            <th>Title</th>
             <td th:text="${book.title}"></td>
         </tr>
     </th:block>
